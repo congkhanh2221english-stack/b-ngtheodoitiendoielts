@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IELTS Mastery Tracker Pro</title>
+<style>
+:root{
+  --bg:#f6f8ff;--card:#fff;--text:#172033;--muted:#667085;--line:#e6e9f2;
+  --primary:#4f46e5;--primary2:#7c3aed;--skill:#3b82f6;--skill-soft:#eff6ff;
+  --success:#16a34a;--warning:#f59e0b;--danger:#ef4444;
+  --shadow:0 18px 45px rgba(34,39,81,.10);--radius:20px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%,rgba(99,102,241,.16),transparent 26%),
+    radial-gradient(circle at 90% 10%,rgba(236,72,153,.13),transparent 24%),
+    linear-gradient(180deg,#f8faff,#f5f7fb 440px,#f3f6fb);
+}
+button,input,select,textarea{font:inherit}
+button{user-select:none}
+.app{max-width:1500px;margin:auto;padding:22px}
+.hero{
+  position:relative;overflow:hidden;border-radius:28px;padding:26px 28px;color:#fff;
+  background:linear-gradient(125deg,#111827 0%,#312e81 38%,#6d28d9 72%,#db2777 120%);
+  box-shadow:0 24px 60px rgba(76,29,149,.23);display:flex;justify-content:space-between;align-items:center;gap:20px
+}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero:before{width:260px;height:260px;right:-70px;top:-120px}
+.hero:after{width:180px;height:180px;left:40%;bottom:-140px}
+.hero-content,.hero-actions{position:relative;z-index:1}
+.kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:900;color:#ddd6fe}
+.hero h1{margin:4px 0 6px;font-size:clamp(27px,3vw,42px);line-height:1.08}
+.hero p{margin:0;color:#ede9fe;font-size:14px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{
+  border:0;border-radius:13px;padding:11px 15px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:.18s ease;text-decoration:none
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.02)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 8px 22px rgba(79,70,229,.24)}
+.btn-light{background:#fff;color:#312e81}
+.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-soft{background:#f1f5ff;color:#4338ca}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.btn-success{background:#dcfce7;color:#166534}
+.btn-warning{background:#fff7ed;color:#c2410c}
+.btn-sm{padding:7px 10px;border-radius:10px;font-size:12px}
+.grid{display:grid;gap:16px}
+.card{
+  background:rgba(255,255,255,.96);border:1px solid rgba(230,233,242,.9);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px
+}
+.profile-card{margin-top:18px}
+.profile-grid{grid-template-columns:2fr 1fr 1fr 1fr}
+.field label{display:block;color:#667085;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid #dde2ee;background:#fff;border-radius:12px;padding:11px 12px;color:#172033;outline:none;transition:.15s
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#a5b4fc;box-shadow:0 0 0 4px rgba(99,102,241,.10)}
+textarea{resize:vertical}
+.stats{grid-template-columns:repeat(4,1fr);margin-top:16px}
+.stat{position:relative;overflow:hidden;min-height:125px}
+.stat:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-36px;bottom:-42px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(236,72,153,.05))}
+.stat-label{font-size:12px;color:#667085;font-weight:800}
+.stat-value{font-size:30px;font-weight:950;margin-top:6px;letter-spacing:-.03em}
+.stat-sub{font-size:12px;color:#8a93a5;margin-top:4px;max-width:85%}
+.progress{height:9px;border-radius:999px;background:#eef1f7;overflow:hidden;margin-top:12px}
+.progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#4f46e5,#8b5cf6,#ec4899)}
+.skill-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.skill-meter{padding:15px;border-radius:18px;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.skill-meter:after{content:"";position:absolute;right:-28px;top:-28px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.12)}
+.skill-meter strong{font-size:14px}.skill-meter .big{font-size:24px;font-weight:950;margin-top:7px}.skill-meter .tiny{font-size:11px;opacity:.85}
+.skill-meter.listening{background:linear-gradient(135deg,#0ea5e9,#2563eb)}
+.skill-meter.reading{background:linear-gradient(135deg,#22c55e,#15803d)}
+.skill-meter.writing{background:linear-gradient(135deg,#f59e0b,#f97316)}
+.skill-meter.speaking{background:linear-gradient(135deg,#8b5cf6,#db2777)}
+.workspace{display:grid;grid-template-columns:245px 1fr;gap:16px;margin-top:18px}
+.sidebar{position:sticky;top:10px;height:fit-content;padding:12px}
+.sidebar-title{font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:#94a3b8;font-weight:900;padding:7px 9px}
+.skill-btn{
+  width:100%;border:0;background:transparent;border-radius:14px;padding:13px 12px;display:flex;align-items:center;justify-content:space-between;
+  font-weight:850;color:#475569;cursor:pointer;margin-bottom:6px
+}
+.skill-btn:hover{background:#f8fafc}
+.skill-btn.active{background:var(--skill-soft);color:var(--skill);box-shadow:inset 0 0 0 1px rgba(99,102,241,.08)}
+.skill-left{display:flex;align-items:center;gap:10px}
+.skill-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-size:16px}
+.skill-icon.listening{background:linear-gradient(135deg,#0ea5e9,#2563eb)}
+.skill-icon.reading{background:linear-gradient(135deg,#22c55e,#15803d)}
+.skill-icon.writing{background:linear-gradient(135deg,#f59e0b,#f97316)}
+.skill-icon.speaking{background:linear-gradient(135deg,#8b5cf6,#db2777)}
+.badge{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#f1f5f9;color:#64748b}
+.sidebar-help{border-top:1px solid var(--line);margin-top:12px;padding:14px 8px 5px;color:#7c8799;font-size:12px;line-height:1.65}
+.content{min-width:0}
+.tabs{
+  display:flex;gap:8px;background:rgba(255,255,255,.88);border:1px solid #edf0f6;box-shadow:var(--shadow);padding:7px;border-radius:17px;margin-bottom:14px;overflow:auto
+}
+.tab-btn{
+  border:0;background:transparent;color:#667085;border-radius:12px;padding:10px 13px;font-weight:850;white-space:nowrap;cursor:pointer
+}
+.tab-btn.active{background:linear-gradient(135deg,var(--skill),color-mix(in srgb,var(--skill) 70%,#8b5cf6));color:#fff;box-shadow:0 7px 16px rgba(79,70,229,.16)}
+.view{display:none}.view.active{display:block}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+.section-head h2{margin:0;font-size:24px;letter-spacing:-.02em}
+.section-head p{margin:4px 0 0;color:#7a8495;font-size:13px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.skill-title{display:flex;align-items:center;gap:10px}
+.skill-chip{color:#fff;background:var(--skill);font-weight:900;font-size:11px;padding:6px 9px;border-radius:999px}
+.week-row{display:flex;align-items:center;justify-content:space-between;margin:11px 1px 9px}
+.week-row strong{font-size:13px;color:#536074}
+.small-muted{font-size:12px;color:#8b95a6}
+.month-grid{display:grid;grid-template-columns:repeat(15,minmax(68px,1fr));gap:8px;overflow:auto;padding-bottom:6px}
+.day-card{
+  min-width:68px;border:1px solid #e4e8f0;background:#fff;border-radius:14px;padding:10px;cursor:pointer;transition:.16s;position:relative
+}
+.day-card:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(17,24,39,.08);border-color:#c7d2fe}
+.day-card.done{background:linear-gradient(180deg,#ecfdf5,#f0fdf4);border-color:#86efac}
+.day-card.progressing{background:linear-gradient(180deg,#fff7ed,#fffbeb);border-color:#fdba74}
+.day-card.missed{background:linear-gradient(180deg,#fff1f2,#fef2f2);border-color:#fda4af}
+.day-card.has-error:after{content:"!";position:absolute;right:6px;top:6px;width:18px;height:18px;border-radius:50%;background:#ef4444;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:950}
+.day-num{font-size:16px;font-weight:950}
+.day-status{font-size:10px;color:#7c8799;margin-top:5px;white-space:nowrap}
+.score-mini{font-size:11px;font-weight:900;margin-top:5px;color:#334155}
+.attachment-mini{font-size:10px;margin-top:4px;color:#6d28d9;font-weight:800}
+.table-wrap{overflow:auto}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:920px}
+th,td{padding:12px;border-bottom:1px solid #edf0f5;text-align:left;font-size:12px;vertical-align:top}
+th{font-size:10px;color:#8b95a6;text-transform:uppercase;letter-spacing:.08em;background:#fafbfe;position:sticky;top:0}
+td strong{font-size:13px}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900}
+.pill.done{background:#dcfce7;color:#166534}.pill.progressing{background:#ffedd5;color:#9a3412}.pill.missed{background:#fee2e2;color:#991b1b}.pill.none{background:#f1f5f9;color:#64748b}
+.file-chip{display:inline-flex;gap:5px;align-items:center;background:#f5f3ff;color:#6d28d9;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:850;margin:2px;cursor:pointer;border:0}
+.error-dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.error-stat{border-radius:17px;padding:15px;border:1px solid #eef1f6;background:linear-gradient(180deg,#fff,#fbfcff)}
+.error-stat .n{font-size:25px;font-weight:950;margin-top:4px}
+.error-stat .l{font-size:11px;color:#7c8799;font-weight:850}
+.error-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.error-tag{border-radius:999px;background:#fff1f2;color:#be123c;padding:6px 9px;font-size:11px;font-weight:850;border:1px solid #fecdd3}
+.error-card{
+  border:1px solid #eceef5;border-radius:17px;padding:14px;background:#fff;display:grid;grid-template-columns:52px 1fr auto;gap:13px;align-items:start;margin-bottom:10px
+}
+.error-day{width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#fb7185,#e11d48);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900;text-align:center}
+.error-card h4{margin:1px 0 5px;font-size:14px}.error-card p{margin:3px 0;color:#667085;font-size:12px;line-height:1.5}
+.error-actions{display:flex;gap:7px;flex-wrap:wrap}
+.empty-state{text-align:center;padding:38px 18px;color:#7b8495}
+.empty-state .emoji{font-size:46px;margin-bottom:8px}
+.practice-toolbar{
+  border-radius:18px;padding:15px;background:linear-gradient(135deg,#eef2ff,#faf5ff,#fff1f2);border:1px solid #e9e5ff;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.practice-toolbar h3{margin:0;font-size:16px}.practice-toolbar p{margin:4px 0 0;color:#6f7787;font-size:12px}
+.practice-set{border:1px solid #e8eaf2;border-radius:18px;background:#fff;margin-bottom:12px;overflow:hidden}
+.practice-set-head{padding:14px 15px;background:linear-gradient(90deg,var(--skill-soft),#fff);display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #edf0f5}
+.practice-set-head h4{margin:0;font-size:14px}.practice-set-head p{margin:4px 0 0;font-size:11px;color:#7c8799}
+.practice-list{padding:8px 15px 15px}
+.practice-item{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:start;border-bottom:1px dashed #edf0f5;padding:11px 0}
+.practice-item:last-child{border-bottom:0}
+.practice-num{width:30px;height:30px;border-radius:9px;background:var(--skill-soft);color:var(--skill);display:grid;place-items:center;font-weight:950;font-size:11px}
+.practice-item h5{margin:1px 0 4px;font-size:12px}.practice-item p{margin:0;color:#697386;font-size:12px;line-height:1.55}
+.check-btn{border:1px solid #dfe3ea;background:#fff;border-radius:9px;padding:7px 9px;cursor:pointer;font-size:11px;font-weight:850;color:#64748b}
+.check-btn.done{background:#dcfce7;border-color:#86efac;color:#166534}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.60);display:none;align-items:center;justify-content:center;padding:18px;z-index:60}
+.modal-backdrop.show{display:flex}
+.modal{width:min(790px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 35px 90px rgba(0,0,0,.28);padding:22px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.modal-head h3{margin:0}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:0;background:#f3f4f6;cursor:pointer}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+.file-zone{
+  border:1.5px dashed #c7d2fe;border-radius:14px;padding:12px;background:#fafaff;
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.file-zone .file-label{font-size:12px;font-weight:850}.file-zone .file-meta{font-size:11px;color:#8490a2;margin-top:2px;word-break:break-all}
+.file-actions{display:flex;gap:6px;flex-wrap:wrap}
+.audio-box{margin-top:8px;display:none}.audio-box audio{width:100%}
+.divider{height:1px;background:#edf0f5;margin:3px 0}
+.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+.notice{padding:10px 12px;border-radius:12px;background:#f8fafc;color:#64748b;font-size:11px;line-height:1.5}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;border-radius:13px;padding:11px 14px;font-size:12px;font-weight:800;box-shadow:0 18px 35px rgba(0,0,0,.22);opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s;z-index:100}
+.toast.show{opacity:1;transform:translateY(0)}
+.footer{text-align:center;color:#98a2b3;font-size:11px;padding:20px}
+@media(max-width:1050px){
+  .profile-grid,.stats,.skill-strip{grid-template-columns:1fr 1fr}
+  .workspace{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.sidebar-title,.sidebar-help{grid-column:1/-1}.skill-btn{margin:0}
+  .error-dashboard{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .app{padding:11px}.hero{flex-direction:column;align-items:flex-start;padding:22px}.profile-grid,.stats,.skill-strip,.error-dashboard{grid-template-columns:1fr}
+  .sidebar{grid-template-columns:1fr 1fr}.skill-btn{padding:10px 8px}.skill-left{gap:7px}.skill-icon{width:30px;height:30px}
+  .section-head,.practice-toolbar{align-items:flex-start;flex-direction:column}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.error-card{grid-template-columns:45px 1fr}.error-actions{grid-column:1/-1}
+}
+@media print{
+  body{background:#fff}.hero-actions,.sidebar,.tabs,.btn,.modal-backdrop{display:none!important}.workspace{grid-template-columns:1fr}.card{box-shadow:none}.app{max-width:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="hero-content">
+      <div class="kicker">Personalized IELTS Learning System</div>
+      <h1>IELTS Mastery Tracker Pro</h1>
+      <p>Theo dõi 4 kỹ năng • Ghi lỗi sai • Lưu đề & file nghe • Tự tạo bài luyện phục hồi lỗi</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-light" onclick="exportData()">⬇ Xuất dữ liệu</button>
+      <label class="btn btn-ghost">⬆ Nhập dữ liệu<input id="importFile" type="file" accept=".json" hidden></label>
+      <button class="btn btn-ghost" onclick="window.print()">🖨 In báo cáo</button>
+    </div>
+  </header>
+
+  <section class="card profile-card">
+    <div class="grid profile-grid">
+      <div class="field"><label>Họ và tên học sinh</label><input id="studentName" placeholder="Ví dụ: Nguyễn Minh Anh"></div>
+      <div class="field"><label>Band hiện tại</label><input id="currentBand" type="number" min="0" max="9" step="0.5" placeholder="5.5"></div>
+      <div class="field"><label>Band mục tiêu</label><input id="targetBand" type="number" min="0" max="9" step="0.5" placeholder="7.0"></div>
+      <div class="field"><label>Ngày bắt đầu</label><input id="startDate" type="date"></div>
+    </div>
+  </section>
+
+  <section class="grid stats">
+    <div class="card stat"><div class="stat-label">Tổng tiến độ</div><div class="stat-value" id="overallPct">0%</div><div class="stat-sub" id="overallSub">0/120 nhiệm vụ hoàn thành</div><div class="progress"><i id="overallBar" style="width:0%"></i></div></div>
+    <div class="card stat"><div class="stat-label">Chuỗi học liên tục</div><div class="stat-value" id="streak">0 ngày</div><div class="stat-sub">Ngày có ít nhất 1 kỹ năng hoàn thành</div></div>
+    <div class="card stat"><div class="stat-label">Điểm trung bình</div><div class="stat-value" id="avgScore">—</div><div class="stat-sub">Tính từ các buổi có nhập Band</div></div>
+    <div class="card stat"><div class="stat-label">Tổng lỗi cần phục hồi</div><div class="stat-value" id="totalErrors">0</div><div class="stat-sub" id="errorSub">Chưa ghi nhận lỗi sai</div></div>
+  </section>
+
+  <section class="skill-strip">
+    <div class="skill-meter listening"><strong>🎧 Listening</strong><div class="big" id="meter-listening">0%</div><div class="tiny" id="meter-sub-listening">0 lỗi</div></div>
+    <div class="skill-meter reading"><strong>📚 Reading</strong><div class="big" id="meter-reading">0%</div><div class="tiny" id="meter-sub-reading">0 lỗi</div></div>
+    <div class="skill-meter writing"><strong>✍️ Writing</strong><div class="big" id="meter-writing">0%</div><div class="tiny" id="meter-sub-writing">0 lỗi</div></div>
+    <div class="skill-meter speaking"><strong>🎤 Speaking</strong><div class="big" id="meter-speaking">0%</div><div class="tiny" id="meter-sub-speaking">0 lỗi</div></div>
+  </section>
+
+  <div class="workspace">
+    <aside class="card sidebar">
+      <div class="sidebar-title">Chọn kỹ năng</div>
+      <button class="skill-btn active" data-skill="listening"><span class="skill-left"><span class="skill-icon listening">🎧</span>Listening</span><span class="badge" id="badge-listening">0%</span></button>
+      <button class="skill-btn" data-skill="reading"><span class="skill-left"><span class="skill-icon reading">📚</span>Reading</span><span class="badge" id="badge-reading">0%</span></button>
+      <button class="skill-btn" data-skill="writing"><span class="skill-left"><span class="skill-icon writing">✍️</span>Writing</span><span class="badge" id="badge-writing">0%</span></button>
+      <button class="skill-btn" data-skill="speaking"><span class="skill-left"><span class="skill-icon speaking">🎤</span>Speaking</span><span class="badge" id="badge-speaking">0%</span></button>
+      <div class="sidebar-help">
+        <b>Mẹo sử dụng:</b><br>
+        1. Cập nhật từng ngày.<br>
+        2. Ghi rõ lỗi sai và nguyên nhân.<br>
+        3. Mở tab <b>Lỗi sai</b> để tổng hợp.<br>
+        4. Tạo bài luyện riêng cho lỗi đang lặp lại.
+      </div>
+    </aside>
+
+    <main class="content">
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="roadmap">🗓 Lộ trình 30 ngày</button>
+        <button class="tab-btn" data-tab="errors">🔎 Tổng hợp lỗi sai</button>
+        <button class="tab-btn" data-tab="practice">🧠 Luyện lại lỗi sai</button>
+      </nav>
+
+      <section class="view active" id="view-roadmap">
+        <div class="card">
+          <div class="section-head">
+            <div>
+              <div class="skill-title"><h2 id="skillTitle">Listening</h2><span class="skill-chip">30 ngày</span></div>
+              <p>Nhấn vào ngày để nhập kết quả, ghi lỗi, tải đề và file nghe.</p>
+            </div>
+            <div class="head-actions">
+              <button class="btn btn-soft" onclick="openToday()">⚡ Cập nhật hôm nay</button>
+              <button class="btn btn-primary" onclick="openFirstIncomplete()">+ Ngày tiếp theo</button>
+            </div>
+          </div>
+          <div class="week-row"><strong>Ngày 1–15</strong><span class="small-muted" id="skillSummaryTop"></span></div>
+          <div class="month-grid" id="days1"></div>
+          <div class="week-row" style="margin-top:17px"><strong>Ngày 16–30</strong><span class="small-muted">● Đỏ = có lỗi cần phục hồi</span></div>
+          <div class="month-grid" id="days2"></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="section-head">
+            <div><h2 style="font-size:19px">Nhật ký học tập</h2><p>Xem nhanh bài đã làm, file đính kèm, điểm và lỗi sai.</p></div>
+            <button class="btn btn-danger btn-sm" onclick="clearSkill()">Xóa dữ liệu kỹ năng</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Ngày</th><th>Trạng thái</th><th>Bài / File</th><th>Band</th><th>Lỗi sai</th><th>Ghi chú</th></tr></thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-errors">
+        <div class="card">
+          <div class="section-head">
+            <div><h2>🔎 Tổng hợp lỗi sai — <span id="errorSkillTitle">Listening</span></h2><p>Tự động gom lỗi từ toàn bộ 30 ngày của kỹ năng đang chọn.</p></div>
+            <div class="head-actions">
+              <button class="btn btn-warning" onclick="generatePracticeFromAllErrors()">🧠 Tạo bộ bài từ tất cả lỗi</button>
+            </div>
+          </div>
+          <div class="error-dashboard">
+            <div class="error-stat"><div class="l">TỔNG LỖI ĐÃ GHI</div><div class="n" id="errTotal">0</div></div>
+            <div class="error-stat"><div class="l">NHÓM LỖI KHÁC NHAU</div><div class="n" id="errTypes">0</div></div>
+            <div class="error-stat"><div class="l">LỖI LẶP LẠI NHIỀU NHẤT</div><div class="n" id="errTop" style="font-size:18px">—</div></div>
+            <div class="error-stat"><div class="l">NGÀY CÓ LỖI</div><div class="n" id="errDays">0</div></div>
+          </div>
+          <div id="errorTags" class="error-tags"></div>
+          <div id="errorList" style="margin-top:14px"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-practice">
+        <div class="practice-toolbar">
+          <div><h3>🧠 Phòng luyện phục hồi lỗi sai</h3><p>App tạo micro-drill dựa trên loại lỗi và ghi chú học sinh đã nhập.</p></div>
+          <div class="head-actions">
+            <button class="btn btn-soft" onclick="generatePracticeFromAllErrors()">Tạo từ tất cả lỗi</button>
+            <button class="btn btn-primary" onclick="regenerateLatest()">↻ Tạo lại bộ gần nhất</button>
+          </div>
+        </div>
+        <div id="practiceList"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="footer">Dữ liệu và file đính kèm được lưu cục bộ trên trình duyệt. File JSON xuất ra lưu tiến độ và metadata; file PDF/audio vẫn nằm trong trình duyệt hiện tại.</div>
+</div>
+
+<div class="modal-backdrop" id="modalWrap">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h3 id="modalTitle">Cập nhật ngày</h3><div class="small-muted">Điền càng cụ thể, tab lỗi sai và bài luyện càng hữu ích.</div></div>
+      <button class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Trạng thái</label>
+        <select id="status"><option value="none">Chưa cập nhật</option><option value="progressing">Đang làm</option><option value="done">Hoàn thành</option><option value="missed">Chưa đạt / bỏ lỡ</option></select>
+      </div>
+      <div class="field"><label>Điểm / Band</label><input id="score" type="number" min="0" max="9" step="0.5" placeholder="Ví dụ: 6.5"></div>
+      <div class="field full"><label>Nội dung / tên bài</label><input id="task" placeholder="Ví dụ: Cambridge 18 - Test 1 / Task 2 / Speaking Topic"></div>
+      <div class="field"><label>Thời lượng (phút)</label><input id="minutes" type="number" min="0" step="5" placeholder="60"></div>
+      <div class="field"><label>Độ khó cảm nhận</label><select id="difficulty"><option value="">—</option><option>Dễ</option><option>Vừa</option><option>Khó</option></select></div>
+
+      <div class="field full"><label>Loại lỗi chính</label><select id="errorType"></select></div>
+      <div class="field full"><label>Lỗi sai cụ thể / câu sai / từ sai</label><textarea id="errorDetail" rows="3" placeholder="Ví dụ: Nghe 'fifteen' thành 'fifty'; bỏ số nhiều -s; chọn False thay vì Not Given..."></textarea></div>
+      <div class="field"><label>Nguyên nhân</label><input id="rootCause" placeholder="Ví dụ: không đọc keyword, mất tập trung..."></div>
+      <div class="field"><label>Cách sửa / quy tắc rút ra</label><input id="fixPlan" placeholder="Ví dụ: kiểm tra plural trước khi chốt đáp án"></div>
+
+      <div class="full divider"></div>
+      <div class="field full"><label>Đề / tài liệu PDF, ảnh, Word</label>
+        <div class="file-zone">
+          <div><div class="file-label">📄 File đề</div><div class="file-meta" id="questionMeta">Chưa có file</div></div>
+          <div class="file-actions">
+            <label class="btn btn-soft btn-sm">Tải đề lên<input id="questionFile" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp" hidden></label>
+            <button class="btn btn-light btn-sm" style="border:1px solid #e5e7eb" onclick="openAttachment('question')">Mở</button>
+            <button class="btn btn-danger btn-sm" onclick="removeAttachment('question')">Xóa</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field full"><label>File nghe / audio</label>
+        <div class="file-zone">
+          <div><div class="file-label">🎧 Audio</div><div class="file-meta" id="audioMeta">Chưa có file</div></div>
+          <div class="file-actions">
+            <label class="btn btn-soft btn-sm">Tải audio lên<input id="audioFile" type="file" accept="audio/*,.mp3,.wav,.m4a,.ogg" hidden></label>
+            <button class="btn btn-light btn-sm" style="border:1px solid #e5e7eb" onclick="playAttachment()">Nghe</button>
+            <button class="btn btn-danger btn-sm" onclick="removeAttachment('audio')">Xóa</button>
+          </div>
+        </div>
+        <div class="audio-box" id="audioBox"><audio id="audioPlayer" controls></audio></div>
+      </div>
+
+      <div class="field full"><label>Ghi chú giáo viên / học sinh</label><textarea id="note" rows="3" placeholder="Điểm cần nhắc lại ở buổi sau..."></textarea></div>
+      <div class="full notice">💡 Khi có <b>Loại lỗi</b> và <b>Lỗi cụ thể</b>, app sẽ tự đưa lỗi đó vào tab “Tổng hợp lỗi sai” và có thể tạo bộ bài luyện riêng.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-light" style="border:1px solid #e5e7eb" onclick="closeModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveEntry()">💾 Lưu cập nhật</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SKILLS={
+ listening:{name:"Listening",color:"#2563eb",soft:"#eff6ff",errors:["Không nghe được từ khóa","Spelling","Số nhiều / số ít","Số / ngày / giờ","Distractor","Map / Direction","Form completion","Multiple choice","Mất tập trung","Khác"]},
+ reading:{name:"Reading",color:"#16a34a",soft:"#f0fdf4",errors:["True/False/Not Given","Yes/No/Not Given","Matching Headings","Matching Information","Sentence Completion","Summary Completion","Vocabulary / Paraphrase","Keyword sai","Quản lý thời gian","Khác"]},
+ writing:{name:"Writing",color:"#f97316",soft:"#fff7ed",errors:["Task Response","Coherence & Cohesion","Lexical Resource","Grammar Range","Grammar Accuracy","Idea Development","Paragraphing","Overview / Thesis","Data Comparison","Spelling / Punctuation","Khác"]},
+ speaking:{name:"Speaking",color:"#a855f7",soft:"#faf5ff",errors:["Fluency","Hesitation","Pronunciation","Word stress","Grammar","Vocabulary","Idea Development","Part 2 structure","Part 3 depth","Repetition","Khác"]}
+};
+let state=loadState(), currentSkill="listening", currentDay=1, activeTab="roadmap";
+let pendingQuestionFile=null,pendingAudioFile=null;
+let currentAudioUrl=null;
+
+function blankEntry(){return {status:"none",score:"",task:"",minutes:"",difficulty:"",note:"",errorType:"",errorDetail:"",rootCause:"",fixPlan:"",attachments:{question:null,audio:null}}}
+function defaultState(){
+ const x={version:2,profile:{name:"",currentBand:"",targetBand:"",startDate:""},entries:{},practice:{}};
+ Object.keys(SKILLS).forEach(s=>{x.entries[s]={};x.practice[s]=[];for(let d=1;d<=30;d++)x.entries[s][d]=blankEntry()});
+ return x;
+}
+function loadState(){
+ try{
+  const raw=JSON.parse(localStorage.getItem("ieltsTrackerProV2")||localStorage.getItem("ieltsTrackerV1")||"null");
+  const base=defaultState(); if(!raw)return base;
+  base.profile={...base.profile,...(raw.profile||{})};
+  Object.keys(SKILLS).forEach(s=>{
+    for(let d=1;d<=30;d++) base.entries[s][d]={...blankEntry(),...(raw.entries?.[s]?.[d]||{}),attachments:{question:null,audio:null,...(raw.entries?.[s]?.[d]?.attachments||{})}};
+    base.practice[s]=Array.isArray(raw.practice?.[s])?raw.practice[s]:[];
+  });
+  return base;
+ }catch(e){return defaultState()}
+}
+function saveState(){localStorage.setItem("ieltsTrackerProV2",JSON.stringify(state))}
+function toastMsg(msg){toast.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),1800)}
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function statusText(s){return ({done:"Hoàn thành",progressing:"Đang làm",missed:"Chưa đạt",none:"Chưa cập nhật"})[s]||"Chưa cập nhật"}
+function bindProfile(){
+ const p=state.profile; studentName.value=p.name||"";currentBand.value=p.currentBand||"";targetBand.value=p.targetBand||"";startDate.value=p.startDate||"";
+ [studentName,currentBand,targetBand,startDate].forEach(el=>el.oninput=()=>{state.profile={name:studentName.value,currentBand:currentBand.value,targetBand:targetBand.value,startDate:startDate.value};saveState();renderStats()})
+}
+function applySkillTheme(){
+ const m=SKILLS[currentSkill];document.documentElement.style.setProperty("--skill",m.color);document.documentElement.style.setProperty("--skill-soft",m.soft);
+ skillTitle.textContent=m.name;errorSkillTitle.textContent=m.name;
+ document.querySelectorAll(".skill-btn").forEach(b=>b.classList.toggle("active",b.dataset.skill===currentSkill));
+ fillErrorTypes();
+}
+function fillErrorTypes(){
+ const current=errorType.value||"";
+ errorType.innerHTML='<option value="">— Không ghi lỗi —</option>'+SKILLS[currentSkill].errors.map(x=>`<option>${esc(x)}</option>`).join("");
+ if([...errorType.options].some(o=>o.value===current))errorType.value=current;
+}
+function renderAll(){applySkillTheme();renderRoadmap();renderErrors();renderPractice();renderStats()}
+function renderRoadmap(){
+ days1.innerHTML="";days2.innerHTML="";
+ for(let d=1;d<=30;d++){
+  const e=state.entries[currentSkill][d],card=document.createElement("div");
+  const hasErr=!!(e.errorType||e.errorDetail);
+  card.className=`day-card ${e.status!=="none"?e.status:""} ${hasErr?"has-error":""}`;
+  const fileCount=(e.attachments?.question?1:0)+(e.attachments?.audio?1:0);
+  card.innerHTML=`<div class="day-num">${d}</div><div class="day-status">${statusText(e.status)}</div>${e.score!==""?`<div class="score-mini">Band ${esc(e.score)}</div>`:""}${fileCount?`<div class="attachment-mini">📎 ${fileCount} file</div>`:""}`;
+  card.onclick=()=>openModal(d);(d<=15?days1:days2).appendChild(card);
+ }
+ renderLog();
+}
+function renderLog(){
+ let rows=[];
+ for(let d=1;d<=30;d++){
+  const e=state.entries[currentSkill][d];
+  if(e.status==="none"&&!e.task&&!e.note&&!e.errorType&&!e.errorDetail&&e.score===""&&!e.attachments?.question&&!e.attachments?.audio)continue;
+  let files=[];
+  if(e.attachments?.question)files.push(`<button class="file-chip" onclick="openStoredFile('${currentSkill}',${d},'question')">📄 ${esc(shortName(e.attachments.question.name))}</button>`);
+  if(e.attachments?.audio)files.push(`<button class="file-chip" onclick="openStoredFile('${currentSkill}',${d},'audio')">🎧 ${esc(shortName(e.attachments.audio.name))}</button>`);
+  rows.push(`<tr><td><strong>Ngày ${d}</strong><div class="small-muted">${e.minutes?esc(e.minutes)+" phút":""}</div></td>
+  <td><span class="pill ${e.status}">${statusText(e.status)}</span></td>
+  <td><strong>${esc(e.task)||"—"}</strong><div>${files.join("")}</div></td>
+  <td>${e.score!==""?esc(e.score):"—"}</td>
+  <td>${e.errorType?`<span class="error-tag">${esc(e.errorType)}</span>`:""}<div style="margin-top:5px">${esc(e.errorDetail)||"—"}</div></td>
+  <td>${esc(e.note)||"—"}</td></tr>`);
+ }
+ logBody.innerHTML=rows.length?rows.join(""):`<tr><td colspan="6"><div class="empty-state"><div class="emoji">📝</div>Chưa có dữ liệu cho kỹ năng này.</div></td></tr>`;
+}
+function shortName(s){return s.length>22?s.slice(0,18)+"…":s}
+function getErrors(skill=currentSkill){
+ const arr=[];for(let d=1;d<=30;d++){const e=state.entries[skill][d];if(e.errorType||e.errorDetail)arr.push({day:d,...e})}return arr;
+}
+function renderErrors(){
+ const errors=getErrors();const counts={};errors.forEach(e=>{const k=e.errorType||"Chưa phân loại";counts[k]=(counts[k]||0)+1});
+ const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+ errTotal.textContent=errors.length;errTypes.textContent=sorted.length;errTop.textContent=sorted[0]?sorted[0][0]:"—";errDays.textContent=new Set(errors.map(e=>e.day)).size;
+ errorTags.innerHTML=sorted.map(([k,v])=>`<span class="error-tag">${esc(k)} · ${v}</span>`).join("");
+ if(!errors.length){
+  errorList.innerHTML=`<div class="empty-state"><div class="emoji">🎯</div><b>Chưa có lỗi sai được ghi nhận.</b><br><span class="small-muted">Mở một ngày trong lộ trình và nhập “Loại lỗi” + “Lỗi sai cụ thể”.</span></div>`;return
+ }
+ errorList.innerHTML=errors.slice().reverse().map(e=>`<div class="error-card">
+   <div class="error-day">NGÀY<br>${e.day}</div>
+   <div><h4>${esc(e.errorType||"Lỗi chưa phân loại")}</h4>
+   <p><b>Lỗi:</b> ${esc(e.errorDetail)||"—"}</p>
+   <p><b>Nguyên nhân:</b> ${esc(e.rootCause)||"Chưa ghi"} &nbsp;•&nbsp; <b>Cách sửa:</b> ${esc(e.fixPlan)||"Chưa ghi"}</p></div>
+   <div class="error-actions"><button class="btn btn-soft btn-sm" onclick="openModal(${e.day})">Sửa lỗi</button><button class="btn btn-primary btn-sm" onclick="generatePracticeForDay(${e.day})">Tạo bài luyện</button></div>
+  </div>`).join("");
+}
+function buildDrills(skill,e,variant=0){
+ const type=e.errorType||"lỗi chưa phân loại", detail=e.errorDetail||"lỗi đã ghi", fix=e.fixPlan||"tự rút ra quy tắc sửa lỗi";
+ const seed=(variant%3)+1;
+ const common=[
+  {t:"Phân tích lỗi",p:`Viết lại lỗi “${detail}” theo 3 cột: Dấu hiệu → Vì sao sai → Quy tắc đúng. Kết thúc bằng 1 câu nhắc bản thân.`},
+  {t:"Active recall",p:`Không nhìn ghi chú, tự giải thích lỗi ${type} trong 45 giây. Sau đó đối chiếu với quy tắc: ${fix}.`},
+  {t:"Bài kiểm tra nhanh",p:`Tự tạo 5 ví dụ tương tự lỗi ${type}. Làm lại sau 10 phút và chỉ tính đạt khi đúng ít nhất 4/5.`}
+ ];
+ const banks={
+  listening:[
+   {t:"Shadow + Dictation",p:`Nghe lại đoạn chứa lỗi “${detail}”. Chép chính tả 3 lần, mỗi lần dừng ít hơn lần trước; khoanh các âm nối/âm cuối bị bỏ.`},
+   {t:"Prediction Drill",p:`Trước khi nghe, dự đoán loại từ, số ít/số nhiều, dạng số hoặc tên riêng cho 8 ô đáp án tương tự ${type}.`},
+   {t:"Distractor Hunt",p:`Nghe lại 1 đoạn và ghi 3 thông tin người nói sửa/đính chính. Mục tiêu: phân biệt đáp án cuối cùng với distractor.`},
+   {t:"Spelling Sprint",p:`Tạo danh sách 12 từ/cụm dễ nhầm liên quan lỗi ${type}; nghe–viết–soát lỗi trong 6 phút.`}
+  ],
+  reading:[
+   {t:"Keyword → Paraphrase",p:`Lấy 8 keyword từ câu sai “${detail}”; viết ít nhất 2 paraphrase cho mỗi keyword rồi tìm lại trong passage.`},
+   {t:"Evidence Line",p:`Với 5 câu luyện, bắt buộc ghi số dòng/cụm bằng chứng trước khi chọn đáp án. Không chọn theo cảm giác.`},
+   {t:"Elimination Drill",p:`Tạo 5 đáp án nhiễu và ghi lý do loại từng đáp án theo lỗi ${type}: sai phạm vi, trái nghĩa, không có thông tin, quá tuyệt đối.`},
+   {t:"Timed Mini-set",p:`Làm 6 câu cùng dạng ${type} trong 8 phút; sau đó dành 4 phút phân tích vì sao từng đáp án đúng/sai.`}
+  ],
+  writing:[
+   {t:"Sentence Repair",p:`Viết lại 8 câu có vấn đề giống “${detail}”. Mỗi câu phải có bản trước → bản sửa → lý do sửa.`},
+   {t:"Upgrade Drill",p:`Viết 5 câu band thấp rồi nâng cấp theo tiêu chí ${type}; tránh cố dùng từ quá khó nếu không kiểm soát được ngữ pháp.`},
+   {t:"Paragraph Rebuild",p:`Viết 1 đoạn 90–120 từ tập trung riêng vào ${type}. Sau khi viết, tự đánh dấu thesis/topic sentence/evidence/linking.`},
+   {t:"Self-check Checklist",p:`Tạo checklist 5 mục cho ${type}; dùng checklist đó rà lại một bài cũ trong 7 phút và ghi tối thiểu 3 chỗ cần sửa.`}
+  ],
+  speaking:[
+   {t:"Record → Review",p:`Nói 90 giây về một chủ đề quen thuộc. Nghe lại và đánh dấu mỗi lần xuất hiện lỗi ${type} hoặc lỗi giống “${detail}”.`},
+   {t:"Second Attempt",p:`Nói lại cùng câu trả lời nhưng giảm 50% số lần dừng/nhắc từ; bắt buộc áp dụng quy tắc: ${fix}.`},
+   {t:"Expansion Drill",p:`Trả lời 5 câu hỏi bằng công thức Answer → Reason → Example → Result để cải thiện ${type}.`},
+   {t:"Pronunciation/Fluency Loop",p:`Chọn 6 câu trong bài nói, đọc chậm → tự nhiên → có nối âm; ghi âm 3 vòng và so sánh.`}
+  ]
+ };
+ const bank=banks[skill];let chosen=[];
+ for(let i=0;i<4;i++)chosen.push(bank[(i+seed-1)%bank.length]);
+ return [...chosen,...common].map((x,i)=>({...x,id:Date.now()+i+Math.random(),done:false}));
+}
+function createPracticeSet(e,day,variant=0){
+ const set={id:Date.now()+Math.random(),createdAt:new Date().toISOString(),sourceDay:day,errorType:e.errorType||"Chưa phân loại",detail:e.errorDetail||"",variant,tasks:buildDrills(currentSkill,e,variant)};
+ state.practice[currentSkill].unshift(set);saveState();renderPractice();renderStats();switchTab("practice");toastMsg("Đã tạo bộ bài luyện từ lỗi sai");
+}
+function generatePracticeForDay(day){createPracticeSet(state.entries[currentSkill][day],day,Math.floor(Math.random()*3))}
+function generatePracticeFromAllErrors(){
+ const errors=getErrors();if(!errors.length){toastMsg("Chưa có lỗi sai để tạo bài luyện");return}
+ const counts={};errors.forEach(e=>{const k=e.errorType||"Chưa phân loại";counts[k]=(counts[k]||0)+1});
+ const focus=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];
+ const picked=errors.slice().reverse().find(e=>(e.errorType||"Chưa phân loại")===focus)||errors[errors.length-1];
+ createPracticeSet({...picked,errorDetail:`Nhóm lỗi lặp lại: ${focus}. ${picked.errorDetail||""}`},picked.day,Math.floor(Math.random()*3));
+}
+function regenerateLatest(){
+ const list=state.practice[currentSkill];if(!list.length){generatePracticeFromAllErrors();return}
+ const old=list[0],e=state.entries[currentSkill][old.sourceDay]||{errorType:old.errorType,errorDetail:old.detail,fixPlan:""};
+ createPracticeSet(e,old.sourceDay,(old.variant||0)+1);
+}
+function renderPractice(){
+ const list=state.practice[currentSkill]||[];
+ if(!list.length){practiceList.innerHTML=`<div class="card empty-state"><div class="emoji">🧩</div><b>Chưa có bộ bài luyện.</b><br><span class="small-muted">Vào tab “Tổng hợp lỗi sai” và bấm “Tạo bài luyện”.</span></div>`;return}
+ practiceList.innerHTML=list.map((set,si)=>{
+  const done=set.tasks.filter(t=>t.done).length;
+  return `<div class="practice-set">
+   <div class="practice-set-head"><div><h4>${esc(SKILLS[currentSkill].name)} · ${esc(set.errorType)} · nguồn Ngày ${set.sourceDay}</h4><p>${new Date(set.createdAt).toLocaleString("vi-VN")} · Hoàn thành ${done}/${set.tasks.length}</p></div>
+   <div class="head-actions"><button class="btn btn-soft btn-sm" onclick="regenerateSet(${si})">↻ Tạo lại</button><button class="btn btn-danger btn-sm" onclick="deletePracticeSet(${si})">Xóa</button></div></div>
+   <div class="practice-list">${set.tasks.map((t,ti)=>`<div class="practice-item"><div class="practice-num">${ti+1}</div><div><h5>${esc(t.t)}</h5><p>${esc(t.p)}</p></div><button class="check-btn ${t.done?"done":""}" onclick="togglePractice(${si},${ti})">${t.done?"✓ Đã làm":"Đánh dấu"}</button></div>`).join("")}</div>
+  </div>`;
+ }).join("");
+}
+function togglePractice(si,ti){state.practice[currentSkill][si].tasks[ti].done=!state.practice[currentSkill][si].tasks[ti].done;saveState();renderPractice()}
+function deletePracticeSet(si){if(confirm("Xóa bộ bài luyện này?")){state.practice[currentSkill].splice(si,1);saveState();renderPractice()}}
+function regenerateSet(si){
+ const old=state.practice[currentSkill][si],e=state.entries[currentSkill][old.sourceDay]||{errorType:old.errorType,errorDetail:old.detail,fixPlan:""};
+ createPracticeSet(e,old.sourceDay,(old.variant||0)+1)
+}
+function renderStats(){
+ let doneAll=0,scores=[],errorsAll=0;const skillDone={},skillErrors={};
+ Object.keys(SKILLS).forEach(s=>{
+  let d=0,er=0;
+  for(let day=1;day<=30;day++){const e=state.entries[s][day];if(e.status==="done"){d++;doneAll++}if(e.score!==""&&!isNaN(+e.score))scores.push(+e.score);if(e.errorType||e.errorDetail){er++;errorsAll++}}
+  skillDone[s]=d;skillErrors[s]=er;const pct=Math.round(d/30*100);
+  document.getElementById("badge-"+s).textContent=pct+"%";document.getElementById("meter-"+s).textContent=pct+"%";document.getElementById("meter-sub-"+s).textContent=er+" lỗi đã ghi";
+ });
+ const pct=Math.round(doneAll/120*100);overallPct.textContent=pct+"%";overallSub.textContent=`${doneAll}/120 nhiệm vụ hoàn thành`;overallBar.style.width=pct+"%";
+ avgScore.textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"—";totalErrors.textContent=errorsAll;errorSub.textContent=errorsAll?`${errorsAll} lỗi trên 4 kỹ năng`:"Chưa ghi nhận lỗi sai";
+ let days=[];for(let d=1;d<=30;d++)if(Object.keys(SKILLS).some(s=>state.entries[s][d].status==="done"))days.push(d);
+ let st=0;if(days.length){let last=days.at(-1);st=1;for(let d=last-1;d>=1;d--){if(days.includes(d))st++;else break}}streak.textContent=st+" ngày";
+ const cur=skillDone[currentSkill];skillSummaryTop.textContent=`Hoàn thành ${cur}/30 ngày · ${skillErrors[currentSkill]} lỗi đã ghi`;
+}
+function switchTab(tab){
+ activeTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+tab));
+ if(tab==="errors")renderErrors();if(tab==="practice")renderPractice();
+}
+function openModal(day){
+ currentDay=day;pendingQuestionFile=null;pendingAudioFile=null;const e=state.entries[currentSkill][day];
+ modalTitle.textContent=`${SKILLS[currentSkill].name} • Ngày ${day}`;fillErrorTypes();
+ status.value=e.status;score.value=e.score;task.value=e.task;minutes.value=e.minutes;difficulty.value=e.difficulty;errorType.value=e.errorType||"";errorDetail.value=e.errorDetail||"";rootCause.value=e.rootCause||"";fixPlan.value=e.fixPlan||"";note.value=e.note||"";
+ updateAttachmentMeta();stopAudio();modalWrap.classList.add("show")
+}
+function closeModal(){modalWrap.classList.remove("show");stopAudio()}
+function saveEntry(){
+ const old=state.entries[currentSkill][currentDay];
+ state.entries[currentSkill][currentDay]={...old,status:status.value,score:score.value,task:task.value.trim(),minutes:minutes.value,difficulty:difficulty.value,note:note.value.trim(),errorType:errorType.value,errorDetail:errorDetail.value.trim(),rootCause:rootCause.value.trim(),fixPlan:fixPlan.value.trim()};
+ saveState();
+ Promise.all([pendingQuestionFile?storeAttachment("question",pendingQuestionFile):Promise.resolve(),pendingAudioFile?storeAttachment("audio",pendingAudioFile):Promise.resolve()]).then(()=>{pendingQuestionFile=null;pendingAudioFile=null;saveState();closeModal();renderAll();toastMsg("Đã lưu cập nhật")})
+}
+function openToday(){
+ let d=1;if(state.profile.startDate){const s=new Date(state.profile.startDate+"T00:00:00"),n=new Date();n.setHours(0,0,0,0);d=Math.max(1,Math.min(30,Math.floor((n-s)/86400000)+1))}else{d=findFirstIncomplete()}
+ openModal(d)
+}
+function findFirstIncomplete(){for(let d=1;d<=30;d++)if(state.entries[currentSkill][d].status!=="done")return d;return 30}
+function openFirstIncomplete(){openModal(findFirstIncomplete())}
+function clearSkill(){
+ if(!confirm(`Xóa toàn bộ tiến độ, lỗi và bài luyện của ${SKILLS[currentSkill].name}? File đính kèm của kỹ năng này cũng sẽ bị xóa.`))return;
+ for(let d=1;d<=30;d++){deleteDbKey(fileKey(currentSkill,d,"question"));deleteDbKey(fileKey(currentSkill,d,"audio"));state.entries[currentSkill][d]=blankEntry()}
+ state.practice[currentSkill]=[];saveState();renderAll();toastMsg("Đã xóa dữ liệu kỹ năng")
+}
+function exportData(){
+ state.profile={name:studentName.value,currentBand:currentBand.value,targetBand:targetBand.value,startDate:startDate.value};saveState();
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");
+ const safe=(state.profile.name||"hoc-sinh").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-");
+ a.href=URL.createObjectURL(blob);a.download=`ielts-mastery-${safe}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),600)
+}
+importFile.addEventListener("change",async ev=>{
+ const f=ev.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());localStorage.setItem("ieltsTrackerProV2",JSON.stringify(obj));state=loadState();bindProfile();renderAll();toastMsg("Đã nhập dữ liệu")}catch(e){alert("File JSON không hợp lệ.")}ev.target.value=""
+});
+document.querySelectorAll(".skill-btn").forEach(b=>b.onclick=()=>{currentSkill=b.dataset.skill;renderAll()});
+document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+modalWrap.addEventListener("click",e=>{if(e.target===modalWrap)closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+/* IndexedDB file storage */
+const DB_NAME="IELTSMasteryFiles",STORE="files";let dbPromise=null;
+function getDb(){
+ if(dbPromise)return dbPromise;
+ dbPromise=new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});
+ return dbPromise
+}
+function fileKey(skill,day,kind){return `${skill}-${day}-${kind}`}
+async function dbPut(key,val){const db=await getDb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).put(val,key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function dbGet(key){const db=await getDb();return new Promise((res,rej)=>{const r=db.transaction(STORE).objectStore(STORE).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function deleteDbKey(key){try{const db=await getDb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,"readwrite");tx.objectStore(STORE).delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){}}
+questionFile.addEventListener("change",e=>{pendingQuestionFile=e.target.files[0]||null;updateAttachmentMeta()});
+audioFile.addEventListener("change",e=>{pendingAudioFile=e.target.files[0]||null;updateAttachmentMeta()});
+function updateAttachmentMeta(){
+ const e=state.entries[currentSkill][currentDay];const q=pendingQuestionFile?{name:pendingQuestionFile.name,size:pendingQuestionFile.size}:e.attachments?.question;const a=pendingAudioFile?{name:pendingAudioFile.name,size:pendingAudioFile.size}:e.attachments?.audio;
+ questionMeta.textContent=q?`${q.name} · ${fmtBytes(q.size||0)}`:"Chưa có file";audioMeta.textContent=a?`${a.name} · ${fmtBytes(a.size||0)}`:"Chưa có file";
+}
+function fmtBytes(n){if(!n)return "";if(n<1024)return n+" B";if(n<1048576)return (n/1024).toFixed(1)+" KB";return (n/1048576).toFixed(1)+" MB"}
+async function storeAttachment(kind,file){
+ const key=fileKey(currentSkill,currentDay,kind);await dbPut(key,{blob:file,name:file.name,type:file.type,size:file.size,lastModified:file.lastModified});
+ state.entries[currentSkill][currentDay].attachments[kind]={name:file.name,type:file.type,size:file.size,key}
+}
+async function openStoredFile(skill,day,kind){
+ try{const obj=await dbGet(fileKey(skill,day,kind));if(!obj){toastMsg("Không tìm thấy file trong trình duyệt này");return}const url=URL.createObjectURL(obj.blob);window.open(url,"_blank");setTimeout(()=>URL.revokeObjectURL(url),60000)}catch(e){toastMsg("Không mở được file")}
+}
+async function openAttachment(kind){
+ const pending=kind==="question"?pendingQuestionFile:pendingAudioFile;if(pending){const url=URL.createObjectURL(pending);window.open(url,"_blank");setTimeout(()=>URL.revokeObjectURL(url),60000);return}
+ await openStoredFile(currentSkill,currentDay,kind)
+}
+async function playAttachment(){
+ stopAudio();let blob=null;if(pendingAudioFile)blob=pendingAudioFile;else{const obj=await dbGet(fileKey(currentSkill,currentDay,"audio"));blob=obj?.blob}
+ if(!blob){toastMsg("Chưa có file audio");return}currentAudioUrl=URL.createObjectURL(blob);audioPlayer.src=currentAudioUrl;audioBox.style.display="block";audioPlayer.play().catch(()=>{})
+}
+function stopAudio(){try{audioPlayer.pause();audioPlayer.removeAttribute("src");audioPlayer.load()}catch(e){}if(currentAudioUrl)URL.revokeObjectURL(currentAudioUrl);currentAudioUrl=null;audioBox.style.display="none"}
+async function removeAttachment(kind){
+ const e=state.entries[currentSkill][currentDay];if(kind==="question")pendingQuestionFile=null;else{pendingAudioFile=null;stopAudio()}
+ await deleteDbKey(fileKey(currentSkill,currentDay,kind));e.attachments[kind]=null;saveState();updateAttachmentMeta();toastMsg("Đã xóa file")
+}
+
+bindProfile();renderAll();
+</script>
+</body>
+</html>
